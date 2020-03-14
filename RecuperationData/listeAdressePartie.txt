@@ -1,0 +1,4 @@
+https://old.chesstempo.com/requests/download_game_pgn.php?gameids=4460937
+https://old.chesstempo.com/requests/download_game_pgn.php?gameids=4462689
+https://old.chesstempo.com/requests/download_game_pgn.php?gameids=4464058
+https://old.chesstempo.com/requests/download_game_pgn.php?gameids=4474572
