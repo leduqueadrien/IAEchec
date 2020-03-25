@@ -1,0 +1,8 @@
+var ids = [];
+var offset = 0;
+var results = 1000;
+function recur(){
+    var call = true; if(offset+results > 361476){ results = (offset + results) - 361476; call = false}
+    xhttp = new XMLHttpRequest(); xhttp.onload = function() { offset += results; ids = ids.concat(JSON.parse(this.response).result.games.map(g=>{return g.game_id})); console.log("done"); if(call) recur(); };xhttp.open("POST", "https://fr.chesstempo.com/requests/gameslist.php?", true); xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded; charset=UTF-8"); xhttp.send("startIndex="+offset+"&results="+results+"&currentFen=rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1&sort=date&dir=desc&playerMinRating=1&playerMaxRating=2000&pieceColour=either&gameResult=any&opponentMinRating=1&opponentMaxRating=2000&subsetMinRating=2200");
+}
+recur();

@@ -1,4 +1,12 @@
-https://old.chesstempo.com/requests/download_game_pgn.php?gameids=4460937
-https://old.chesstempo.com/requests/download_game_pgn.php?gameids=4462689
-https://old.chesstempo.com/requests/download_game_pgn.php?gameids=4464058
-https://old.chesstempo.com/requests/download_game_pgn.php?gameids=4474572
+https://lichess.org/game/export/2DCxMozQ
+https://lichess.org/game/export/Br7AdPtl
+https://lichess.org/game/export/L7m0zIBG
+https://lichess.org/game/export/7hnxeRlF
+https://lichess.org/game/export/bbzByCe9
+https://lichess.org/game/export/ipP3JdVW
+https://lichess.org/game/export/7mYklTnD
+https://lichess.org/game/export/ziI11tES
+https://lichess.org/game/export/ONWhbV8Y
+https://lichess.org/game/export/g40q9ngV
+https://lichess.org/game/export/k8WOe6DT
+https://lichess.org/game/export/ggIwij3o
