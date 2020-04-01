@@ -43,5 +43,6 @@ void NormeIV(Vecteur_t, double *);
 void Norme1M(Matrice_t, double *);
 void Norme2M(Matrice_t, double *);
 void NormeIM(Matrice_t, double *);
+void NormeFM(Matrice_t, double *);
 
 #endif

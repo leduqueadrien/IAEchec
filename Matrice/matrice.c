@@ -1,4 +1,5 @@
 #include<stdlib.h>
+#include<math.h>
 #include"matrice.h"
 
 
@@ -174,12 +175,31 @@ void SommeVV(Vecteur_t U, Vecteur_t V, Vecteur_t * W) {
 }
 
 
-/*
-void Norme1V (Vecteur_t, double);
-void Norme2V (Vecteur_t, double);
-void NormeIV (Vecteur_t, double);
+void Norme1V (Vecteur_t V, double * ps) {
+    ps = 0;
 
-void Norme1M (Matrice_t, double);
-void Norme2M (Matrice_t, double);
-void NormeIM (Matrice_t, double);
+    for (int i=0; i<V.n; i++)
+        *ps += fabs(V.V[i]);
+}
+
+void Norme2V (Vecteur_t V, double * ps) {
+    ps = 0;
+    for (int i=0; i<V.n; i++) 
+        *ps += V.V[i] * V.V[i];
+    *ps = sqrt(*ps);
+}
+
+
+void NormeIV (Vecteur_t V, double * ps) {
+    double max = V.V[0];
+    for (int i=1; i<V.n; i++)
+        if (max < V.V[i])
+            max = V.V[i];
+    *ps = max;
+}
+
+/*
+void Norme1M (Matrice_t, double *);
+void Norme2M (Matrice_t, double *);
+void NormeIM (Matrice_t, double *);
 */
