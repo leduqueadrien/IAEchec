@@ -1,5 +1,6 @@
 #option
-CFLAGS = -Wall -Wextra -g
+CFLAGS = -Wall -Wextra -g -MMD
+LIB  = -lm
 
 SRC = $(wildcard src/*.c) $(wildcard src/Echec/*.c) $(wildcard src/Matrice/*.c)
 OBJ = $(patsubst src/%.c,build/%.o,$(SRC))
