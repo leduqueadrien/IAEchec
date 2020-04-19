@@ -4,7 +4,8 @@
 #ifndef ECHEC
 #define ECHEC
 
-/* Enumeration pour l'association piece numero */
+/* Enumeration pour l'association piece numero                                   */
+/* Les pieces de l'IA sont positives et les pieces de l'adversaire sont negatives */
 enum piece {
     Pion = 1,
     Tour = 2,
@@ -71,47 +72,52 @@ char AfficherPiece();
 /*          int y : colenne de la piece                                          */
 /* Sortie : void                                                                 */
 /* ----------------------------------------------------------------------------- */
-int * PossibiliterPION(int, int);
+int PossibiliterPION(int *, int, int);
 
 /* ----------------------------------------------------------------------------- */
 /* PossibiliterTOUR : Renvoit toutes les coordonnes ou la tour peut se deplacer  */
-/* Entree : int x : ligne de la piece                                            */
+/* Entree : int * tab : tableau des coordonnes ou la piece peut se deplacer      */
+/*          int x : ligne de la piece                                            */
 /*          int y : colenne de la piece                                          */
 /* Sortie : void                                                                 */
 /* ----------------------------------------------------------------------------- */
-int * PossibiliterTOUR(int, int);
+int PossibiliterTOUR(int *, int, int);
 
 /* ------------------------------------------------------------------------------------- */
 /* PossibiliterCAVALIER : Renvoit toutes les coordonnes ou le cavalier peut se deplacer  */
-/* Entree : int x : ligne de la piece                                                    */
+/* Entree : int * tab : tableau des coordonnes ou la piece peut se deplacer              */
+/*          int x : ligne de la piece                                                    */
 /*          int y : colenne de la piece                                                  */
 /* Sortie : void                                                                         */
 /* ------------------------------------------------------------------------------------- */
-int * PossibiliterCAVALIER(int, int);
+int PossibiliterCAVALIER(int *, int, int);
 
 /* ----------------------------------------------------------------------------- */
 /* PossibiliterFOU : Renvoit toutes les coordonnes ou la fou peut se deplacer    */
-/* Entree : int x : ligne de la piece                                            */
+/* Entree : int * tab : tableau des coordonnes ou la piece peut se deplacer      */
+/*          int x : ligne de la piece                                            */
 /*          int y : colenne de la piece                                          */
 /* Sortie : void                                                                 */
 /* ----------------------------------------------------------------------------- */
-int * PossibiliterFOU(int, int);
+int PossibiliterFOU(int *, int, int);
 
 /* ----------------------------------------------------------------------------- */
 /* PossibiliterROI : Renvoit toutes les coordonnes ou la roi peut se deplacer    */
-/* Entree : int x : ligne de la piece                                            */
+/* Entree : int * tab : tableau des coordonnes ou la piece peut se deplacer      */
+/*          int x : ligne de la piece                                            */
 /*          int y : colenne de la piece                                          */
 /* Sortie : void                                                                 */
 /* ----------------------------------------------------------------------------- */
-int * PossibiliterROI(int, int);
+int PossibiliterROI(int *, int, int);
 
 /* ----------------------------------------------------------------------------- */
 /* PossibiliterDAME : Renvoit toutes les coordonnes ou la dame peut se deplacer  */
-/* Entree : int x : ligne de la piece                                            */
+/* Entree : int * tab : tableau des coordonnes ou la piece peut se deplacer      */
+/*          int x : ligne de la piece                                            */
 /*          int y : colenne de la piece                                          */
 /* Sortie : void                                                                 */
 /* ----------------------------------------------------------------------------- */
-int * Possibiliter(int, int);
+int PossibiliterDAME(int *, int, int);
 
 /* ----------------------------------------------------------------------- */
 /* Lecture de fichier PGN ou l'entete a ete enlever                        */

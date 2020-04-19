@@ -108,15 +108,14 @@ void AfficherPlateau() {
     printf("\n");
 }
 
-int * PossibiliterPION(int x, int y) {
-
-    int tabPossibiliter [4][2];
+int PossibiliterPION(int * tabPossibiliter, int x, int y) {
     int nb = 0;
+    int priseRoi = 0;
 
     // Deplacement normal
     if (x+1 < N && PLATEAU[N*(x+1) + y] == 0) {
-        tabPossibiliter[nb][0] = x+1;
-        tabPossibiliter[nb][1] = y;
+        tabPossibiliter[2*nb] = x+1;
+        tabPossibiliter[2*nb+1] = y;
         nb ++;
     }
 
@@ -125,89 +124,294 @@ int * PossibiliterPION(int x, int y) {
 
     // Deplacement premier coup
     if (x == 1 && PLATEAU[N*(x+2) + y] == 0) {
-        tabPossibiliter[nb][0] = x+2;
-        tabPossibiliter[nb][1] = y;
+        tabPossibiliter[2*nb] = x+2;
+        tabPossibiliter[2*nb+1] = y;
         nb ++;
     }
 
-    // Prise normal + Prise en passant
-    if (x+1 < N && y-1 >= 0 && (PLATEAU[(x+1)*N+y] == 0 || PLATEAU[x*N+y-1] == 0)) {
-        tabPossibiliter[nb][0] = x+1;
-        tabPossibiliter[nb][1] = y-1;
-        nb++;
+    // Prise normal
+    if (x+1 < N) {
+        if (y-1 >= 0 && PLATEAU[(x+1)*N + y-1] <= 0) {
+            if (PLATEAU[(x+1)*N + y-1] == -Roi) {
+                priseRoi = 1;
+            } else {
+                tabPossibiliter[2*nb] = x+1;
+                tabPossibiliter[2*nb+1] = y-1;
+                nb ++;
+            }
+        }
+        if (y+1 < N && PLATEAU[(x+1)*N + y+1] <+ 0) {
+            if (PLATEAU[(x+1)*N + y+1] == -Roi) {
+                priseRoi = 1;
+            } else {
+                tabPossibiliter[2*nb] = x+1;
+                tabPossibiliter[2*nb+1] = y+1;
+                nb ++;
+            }
+        }
+    }
+
+    tabPossibiliter[2*nb] = -1;
+    tabPossibiliter[2*nb+1] = -1;
+
+    return priseRoi;
+}
+
+int PossibiliterTOUR(int * tabPossibiliter, int x, int y) {
+    int nb = 0;
+    int priseRoi = 0;
+
+    // Haut et Bas
+    // Si signe=-1 alors, on parcour vers le Haut
+    // Si signe=1 alors, on parcour cers le Bas
+    for (int signe=-1; signe<=1; signe+=2) {
+        int i = x;
+        do {
+            i+=signe;
+            // Si la piece n'est pas une piece allier
+            if (i>=0 && i<N && PLATEAU[N*i+y] <= 0) {
+                if (PLATEAU[N*i+y] == -Roi) {
+                    priseRoi = 1;
+                } else {
+                    tabPossibiliter[2*nb] = i;
+                    tabPossibiliter[2*nb+1] = y;
+                    nb++;
+                }
+            }
+        } while (i>=0 && i<N && PLATEAU[N*i+y] == 0);
+    }
+
+    // Gauche et Droite
+    // Si signe=-1 alors, on parcour vers la Gauche
+    // Si signe=1 alors, on parcour vers la Droite
+    for (int signe=-1; signe<+1; signe+=2) {
+        int j = y;
+        do {
+            j+=signe;
+            // Si la piece n'est pas une piece allier
+            if (j>=0 && j<N && PLATEAU[N*x+j]) {
+                if (PLATEAU[N*x+j] == -Roi) {
+                    priseRoi = 1;
+                } else {
+                    tabPossibiliter[2*nb] = x;
+                    tabPossibiliter[2*nb+1] = j;
+                    nb++;
+                }
+            }
+        } while (j>=0 && j<N && PLATEAU[N*x+j]);
+    }
+
+    tabPossibiliter[2*nb] = -1;
+    tabPossibiliter[2*nb+1] = -1;
+
+    return priseRoi;
+}
+
+int PossibiliterCAVALIER(int * tabPossibiliter, int x, int y) {
+    int nb = 0;
+    int priseRoi = 0;
+
+    for (int i=-2; i<=2; i+=4) {
+        for (int j=-1; j<=1; j+=2) {
+            if (x+i >= 0 && x+i < N && y+j >= 0 && y+j < N) {
+                if (PLATEAU[(x+i)*N + y+j]) {
+                    if (PLATEAU[(x+i)*N + y+j] == -Roi) {
+                        priseRoi = 1;
+                    } else {
+                        tabPossibiliter[2*nb] = x+i;
+                        tabPossibiliter[2*nb+1] = y+j;
+                        nb++;
+                    }
+                }
+            }
+        }
+    }
+
+    for (int j=-2; j<=2; j+=4) {
+        for (int i=-1; i<=1; i+=2) {
+            if (x+i >= 0 && x+i < N && y+j >= 0 && y+j < N) {
+                if (PLATEAU[(x+i)*N + y+j]) {
+                    if (PLATEAU[(x+i)*N + y+j] == -Roi) {
+                        priseRoi = 1;
+                    } else {
+                        tabPossibiliter[2*nb] = x+i;
+                        tabPossibiliter[2*nb+1] = y+j;
+                        nb++;
+                    }
+                }
+            }
+        }
     }
     
-    if (x+1 < N && y+1 >= 0 && (PLATEAU[(x+1)*N+y] == 0 || PLATEAU[x*N+y+1] == 0)) {
-        tabPossibiliter[nb][0] = x+1;
-        tabPossibiliter[nb][1] = y+1;
-        nb++;
-    }
+    tabPossibiliter[2*nb] = -1;
+    tabPossibiliter[2*nb+1] = -1;
 
-    tabPossibiliter[nb][0] = -1;
-    tabPossibiliter[nb][1] = -1;
-
-    return tabPossibiliter;
+    return priseRoi;
 }
 
-int * PossibiliterTOUR(int x, int y) {
-    int tabPossibiliter [4][2];
+int PossibiliterFOU(int * tabPossibiliter, int x, int y) {
     int nb = 0;
-    int i;
-    int j;
+    int priseRoi = 0;
 
     // Haut
-    i = x;
-    do {
-        i--;
-        // Si la piece n'est pas une piece allier
-        if (PLATEAU[N*i+y] <= 0) {
-            tabPossibiliter[nb][0] = i;
-            tabPossibiliter[nb][1] = y;
-            nb++;
-        }
-    } while (i>=0 && PLATEAU[N*i+y] == 0);
-
+    // Si signe=-1 alors, Haut Gauche
+    // Si signe=1 alors, Haut Droite
+    for (int signe=-1; signe<=1; signe+=2) {
+        int i = x;
+        int j = y;
+        do {
+            x--;
+            y += signe;
+            if (i>=0 && j>=0 && j<N && PLATEAU[i*N + j] <= 0) {
+                if (PLATEAU[i*N + j] == -Roi) {
+                    priseRoi = 1;
+                } else {
+                    tabPossibiliter[2*nb] = i;
+                    tabPossibiliter[2*nb+1] = j;
+                    nb++;
+                }
+            }
+        } while (i>=0 && j>=0 && j<N && PLATEAU[i*N + j] == 0);
+    }
 
     // Bas
-    i = x;
-    do {
-        i++;
-        // Si la piece n'est pas une piece allier
-        if (PLATEAU[N*i+y] <= 0) {
-            tabPossibiliter[nb][0] = i;
-            tabPossibiliter[nb][1] = y;
-            nb++;
-        }
-    } while (i<N && PLATEAU[N*i+y]);
+    // Si signe=-1 alors, Bas Gauche
+    // Si signe=1 alors, Bas Droite
+    for (int signe=-1; signe<=1; signe+=2) {
+        int i = x;
+        int j = y;
+        do {
+            i++;
+            j += signe;
+            if (i<N && j>=0 && j<N && PLATEAU[i*N + j] <= 0) {
+                if (PLATEAU[i*N + y] == -Roi) {
+                    priseRoi = 1;
+                } else {
+                    tabPossibiliter[2*nb] = i;
+                    tabPossibiliter[2*nb+1] = j;
+                    nb++;
+                }
+            }
+        } while (i<N && j>=0 && j<N && PLATEAU[i*N + j] == 0);
+    }
+    
+    tabPossibiliter[2*nb] = -1;
+    tabPossibiliter[2*nb+1] = -1;
 
-    // Gauche
-    j = y;
-    do {
-        j--;
-        // Si la piece n'est pas une piece allier
-        if (PLATEAU[N*x+j]) {
-            tabPossibiliter[nb][0] = x;
-            tabPossibiliter[nb][1] = j;
-            nb++;
-        }
-    } while (j>=0 && PLATEAU[N*x+j]);
-
-    // Droite
-    j = y;
-    do {
-        j++;
-        // Si la piece n'est pas une piece allier
-        if (PLATEAU[N*i+j]) {
-            tabPossibiliter[nb][0] = x;
-            tabPossibiliter[nb][1] = j;
-            nb++;
-        }
-    } while (j<N && PLATEAU[N*x+j]);
-
-
-    tabPossibiliter[nb][0] = -1;
-    tabPossibiliter[nb][1] = -1;
-
-    return tabPossibiliter;
+    return priseRoi;
 }
 
+int PossibiliterROI(int * tabPossibiliter, int x, int y) {
+    int nb = 0;
+    int priseRoi = 0;
+
+    for (int i=x-1; i<=x+1; i++) {
+        for (int j=y-1; j<=y+1; j++){
+            if (i>=0 && i<N && j>=0 && j<N) {
+                if (PLATEAU[i*N + j] <=  0) {
+                    if (PLATEAU[i*N + j] == -Roi) {
+                        priseRoi = 1;
+                    } else {
+                        tabPossibiliter[2*nb] = i;
+                        tabPossibiliter[2*nb+1] = j;
+                        nb++;
+                    }
+                }
+            }
+        }
+    }
+
+    return priseRoi;
+}
+
+int PossibiliterDAME(int * tabPossibiliter, int x, int y) {
+    int nb = 0;
+    int priseRoi = 0;
+
+    // Haut et Bas
+    // Si signe=-1 alors, on parcour vers le Haut
+    // Si signe=1 alors, on parcour cers le Bas
+    for (int signe=-1; signe<=1; signe+=2) {
+        int i = x;
+        do {
+            i+=signe;
+            // Si la piece n'est pas une piece allier
+            if (i>=0 && i<N && PLATEAU[N*i+y] <= 0) {
+                if (PLATEAU[N*i+y] == -Roi) {
+                    priseRoi = 1;
+                } else {
+                    tabPossibiliter[2*nb] = i;
+                    tabPossibiliter[2*nb+1] = y;
+                    nb++;
+                }
+            }
+        } while (i>=0 && i<N && PLATEAU[N*i+y] == 0);
+    }
+
+    // Gauche et Droite
+    // Si signe=-1 alors, on parcour vers la Gauche
+    // Si signe=1 alors, on parcour vers la Droite
+    for (int signe=-1; signe<+1; signe+=2) {
+        int j = y;
+        do {
+            j+=signe;
+            // Si la piece n'est pas une piece allier
+            if (j>=0 && j<N && PLATEAU[N*x+j]) {
+                if (PLATEAU[N*x+j] == -Roi) {
+                    priseRoi = 1;
+                } else {
+                    tabPossibiliter[2*nb] = x;
+                    tabPossibiliter[2*nb+1] = j;
+                    nb++;
+                }
+            }
+        } while (j>=0 && j<N && PLATEAU[N*x+j]);
+    }
+
+    // Haut
+    // Si signe=-1 alors, Haut Gauche
+    // Si signe=1 alors, Haut Droite
+    for (int signe=-1; signe<=1; signe+=2) {
+        int i = x;
+        int j = y;
+        do {
+            x--;
+            y += signe;
+            if (i>=0 && j>=0 && j<N && PLATEAU[i*N + j] <= 0) {
+                if (PLATEAU[i*N + j] == -Roi) {
+                    priseRoi = 1;
+                } else {
+                    tabPossibiliter[2*nb] = i;
+                    tabPossibiliter[2*nb+1] = j;
+                    nb++;
+                }
+            }
+        } while (i>=0 && j>=0 && j<N && PLATEAU[i*N + j] == 0);
+    }
+
+    // Bas
+    // Si signe=-1 alors, Bas Gauche
+    // Si signe=1 alors, Bas Droite
+    for (int signe=-1; signe<=1; signe+=2) {
+        int i = x;
+        int j = y;
+        do {
+            i++;
+            j += signe;
+            if (i<N && j>=0 && j<N && PLATEAU[i*N + j] <= 0) {
+                if (PLATEAU[i*N + y] == -Roi) {
+                    priseRoi = 1;
+                } else {
+                    tabPossibiliter[2*nb] = i;
+                    tabPossibiliter[2*nb+1] = j;
+                    nb++;
+                }
+            }
+        } while (i<N && j>=0 && j<N && PLATEAU[i*N + j] == 0);
+    }
+    
+    tabPossibiliter[2*nb] = -1;
+    tabPossibiliter[2*nb+1] = -1;
+
+    return priseRoi;
+}
