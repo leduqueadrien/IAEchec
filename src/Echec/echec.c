@@ -3,9 +3,43 @@
 #include<stdlib.h>
 #include"echec.h"
 
+Plateau_t plateau;
+Roque_t roque;
+CoupPrecedent_t coupPrecedent;
+
+
+void Initialiser() {
+    InitialiserPlateau();
+    InitialiserRoque();
+    InitialiserCoupPrecedent();
+}
+
 void InitialiserPlateau() {
+    plateau.N = 8;
+    int * tab [plateau.N*plateau.N];
+    plateau.tab = tab;
     RemiseAZero();
-    int N = 8;
+    plateau.couleurOrdi = "blanc";
+}
+
+void InitialiserRoque() {
+    roque.peutGRJoueur = 1;
+    roque.peutGROrdi = 1;
+    roque.peutPRJoueur = 1;
+    roque.peutPROrdi = 1;
+}
+
+void InitialiserCoupPrecedent() {
+    coupPrecedent.xApres = -1;
+    coupPrecedent.xAvant = -1;
+    coupPrecedent.yApres = -1;
+    coupPrecedent.yAvant = -1;
+}
+
+void InitialiserDebutPartie() {
+    int N = plateau.N;
+    int * PLATEAU = plateau.tab;
+
     // Placement des pions
         // Ordinateur
             for (int i=0; i<N; i++)
@@ -52,24 +86,25 @@ void InitialiserPlateau() {
 
     // Petit Roque
         // Ordinateur
-            peutPROrdi = 1;
+            roque.peutPROrdi = 1;
         // Joueur
-            peutPRJoueur = 1;
+            roque.peutPRJoueur = 1;
     
     // Grand Roque
         // Ordinateur
-            peutGROrdi = 1;
+            roque.peutGROrdi = 1;
         // Joueur
-            peutGRJoueur = 1;
+            roque.peutGRJoueur = 1;
 }
 
 void RemiseAZero() {
+    int N = plateau.N;
     for (int i=0; i<N*N; i++)
-        PLATEAU[i] = 0;
+        plateau.tab[i] = 0;
 }
 
 char AfficherPiece(int x, int y) {
-    switch (abs(PLATEAU[x*N + y]))
+    switch (abs(plateau.tab[x*plateau.N + y]))
     {
     case Pion:
         return 'P';
@@ -111,6 +146,8 @@ void AfficherPlateau() {
 int PossibiliterPION(int * tabPossibiliter, int x, int y) {
     int nb = 0;
     int priseRoi = 0;
+    int N = plateau.N;
+    int * PLATEAU = plateau.tab;
 
     // Deplacement normal
     if (x+1 < N && PLATEAU[N*(x+1) + y] == 0) {
@@ -160,6 +197,8 @@ int PossibiliterPION(int * tabPossibiliter, int x, int y) {
 int PossibiliterTOUR(int * tabPossibiliter, int x, int y) {
     int nb = 0;
     int priseRoi = 0;
+    int N = plateau.N;
+    int * PLATEAU = plateau.tab;
 
     // Haut et Bas
     // Si signe=-1 alors, on parcour vers le Haut
@@ -210,6 +249,8 @@ int PossibiliterTOUR(int * tabPossibiliter, int x, int y) {
 int PossibiliterCAVALIER(int * tabPossibiliter, int x, int y) {
     int nb = 0;
     int priseRoi = 0;
+    int N = plateau.N;
+    int * PLATEAU = plateau.tab;
 
     for (int i=-2; i<=2; i+=4) {
         for (int j=-1; j<=1; j+=2) {
@@ -252,6 +293,8 @@ int PossibiliterCAVALIER(int * tabPossibiliter, int x, int y) {
 int PossibiliterFOU(int * tabPossibiliter, int x, int y) {
     int nb = 0;
     int priseRoi = 0;
+    int N = plateau.N;
+    int * PLATEAU = plateau.tab;
 
     // Haut
     // Si signe=-1 alors, Haut Gauche
@@ -304,6 +347,8 @@ int PossibiliterFOU(int * tabPossibiliter, int x, int y) {
 int PossibiliterROI(int * tabPossibiliter, int x, int y) {
     int nb = 0;
     int priseRoi = 0;
+    int N = plateau.N;
+    int * PLATEAU = plateau.tab;
 
     for (int i=x-1; i<=x+1; i++) {
         for (int j=y-1; j<=y+1; j++){
@@ -327,6 +372,8 @@ int PossibiliterROI(int * tabPossibiliter, int x, int y) {
 int PossibiliterDAME(int * tabPossibiliter, int x, int y) {
     int nb = 0;
     int priseRoi = 0;
+    int N = plateau.N;
+    int * PLATEAU = plateau.tab;
 
     // Haut et Bas
     // Si signe=-1 alors, on parcour vers le Haut
@@ -414,4 +461,38 @@ int PossibiliterDAME(int * tabPossibiliter, int x, int y) {
     tabPossibiliter[2*nb+1] = -1;
 
     return priseRoi;
+}
+
+int JouerCoup(int xAvant, int yAvant, int xApres, int yApres) {
+    int piecePrise = 0;
+    int N = plateau.N;
+    int * PLATEAU = plateau.tab;
+
+    if (PLATEAU[xApres*N + yApres] != 0)
+        piecePrise = 1;
+    
+    PLATEAU[xApres*N + yApres] = PLATEAU[xAvant*N + yAvant];
+    PLATEAU[xAvant*N + yAvant] = 0;
+
+    return piecePrise;
+}
+
+void JouerPetitRoque(int x) {
+}
+
+void JouerGrandRoque(int x) {
+}
+
+void LectureFichierPGN(char * nomFichier) {
+    FILE * file = fopen(nomFichier, "r");
+    char * coup;
+    
+    if (file != NULL) {
+        int xAvant;
+        int yAvant;
+        int xApres;
+        int yApres;
+    } else {
+        printf("Fichier %s ne peut pas etre ouvert\n", nomFichier);
+    }
 }

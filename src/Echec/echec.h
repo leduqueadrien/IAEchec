@@ -4,7 +4,7 @@
 #ifndef ECHEC
 #define ECHEC
 
-/* Enumeration pour l'association piece numero                                   */
+/* Enumeration pour l'association piece numero                                    */
 /* Les pieces de l'IA sont positives et les pieces de l'adversaire sont negatives */
 enum piece {
     Pion = 1,
@@ -15,34 +15,77 @@ enum piece {
     Roi = 10,
 };
 
-/* Liste chaine pour le stockage des cases ou une piece peut etre jouer */
-typedef struct ListPossibiliter
+/* -------------------------------------------------------------------------- */
+/* Structure memorisant les informations sur le plateu de jeux                */
+/* Rmq : ordinateur toujours en haut                                          */
+/* -------------------------------------------------------------------------- */
+typedef struct Plateau
 {
-    int x;
-    int y;
-    struct ListPossibiliter * suivant;
-} ListePossibiliter;
+    int * tab;          /* Plateau de jeu. ATTENTION : Il est en une seul dimension */
+    int N;              /* Taille de la plateau : 8 */
+    char * couleurOrdi  /* "Blanc" ou "Noir" */
+} Plateau_t;
 
+/* -------------------------------------------------------------------------- */
+/* Structure memorisant si les roques peuvent etre realise                    */
+/* Rmq : on peut faire le roque a partir du moment                            */
+/*        ou le roi et la tour n'ont pas encore bouger                        */
+/* -------------------------------------------------------------------------- */
+typedef struct Roque
+{
+    int peutPRJoueur;   /* Est ce que le joueur peut faire le petit roque */
+    int peutPROrdi;     /* Est ce que l'ordinateur peut faire le petit roque */
+    int peutGRJoueur;   /* Est ce que le joueur peut faire le grand roque */
+    int peutGROrdi;     /* Est ce que l'ordinateur peut faire le grand roque */
+} Roque_t;
 
-/* -------------------------------------------------------- */
-/* Plateau de jeu. ATTENTION : Il est en une seul dimension */
-/* ordinateur toujours en haut                              */
-/* -------------------------------------------------------- */
-int PLATEAU [64];
-int N;
-
-int peutPRJoueur;
-int peutPROrdi;
-int peutGRJoueur;
-int peutGROrdi;
+/* -------------------------------------------------------------------------- */
+/* Structure memorisant le dernier coup qui a ete jouer                       */
+/* Rmq : permet principalement de faire la prise en passant                   */
+/* -------------------------------------------------------------------------- */
+typedef struct CoupPrecedent
+{
+    int xAvant;
+    int yAvant;
+    int xApres;
+    int yApres;
+} CoupPrecedent_t;
 
 
 /* -------------------------------------------------------------------------- */
-/* InitialiserPlateau : Initialise le plateau d'echec pour debuter une partie */
+/* Initialiser : Initialisation du plateu, des roque et du coup precedent     */
+/* Entree : void                                                              */
+/* Sortie : void                                                              */
+/* -------------------------------------------------------------------------- */
+void Initialiser();
+
+/* -------------------------------------------------------------------------- */
+/* InitialiserPlateau : Initialise le plateau                                 */
 /* Entree : void                                                              */
 /* Sortie : void                                                              */
 /* -------------------------------------------------------------------------- */
 void InitialiserPlateau();
+
+/* -------------------------------------------------------------------------- */
+/* InitialiserRoque : Initialise tous les roques, ils peuvent tous etre jouer */
+/* Entree : void                                                              */
+/* Sortie : void                                                              */
+/* -------------------------------------------------------------------------- */
+void InitialiserRoque();
+
+/* -------------------------------------------------------------------------- */
+/* InitialiserRoque : Initialise tous les roques, ils peuvent tous etre jouer */
+/* Entree : void                                                              */
+/* Sortie : void                                                              */
+/* -------------------------------------------------------------------------- */
+void InitialiserCoupPrecedent();
+
+/* -------------------------------------------------------------------------- */
+/* InitialiserRoque : Initialise le plateau pour debuter une partie           */
+/* Entree : void                                                              */
+/* Sortie : void                                                              */
+/* -------------------------------------------------------------------------- */
+void InitialiserDebutPartie();
 
 /* -------------------------------------------------------------------------- */
 /* RemiseAZero : Met a zero toutes les cases du plateau                       */
@@ -119,8 +162,32 @@ int PossibiliterROI(int *, int, int);
 /* ----------------------------------------------------------------------------- */
 int PossibiliterDAME(int *, int, int);
 
+/* ------------------------------------------------------------------------------- */
+/* JouerCoup : Joue le coup dont l'emplacement de depart et d'arriver sont donnees */
+/* Entree : int xAvant : ligne de la piece qui doit etre joue                      */
+/*          int yAvant : colonne de la piece qui doit etre joue                    */
+/*          int xApres : ligne ou la piece doit etre joue                          */
+/*          int yApres : colonne ou la piece doit etre joue                        */
+/* Sortie : int piecePrise : 1 si une piece a ete prise, 0 sinon                   */
+/* ------------------------------------------------------------------------------- */
+int JouerCoup(int, int, int, int);
+
+/* ----------------------------------------------------------------------------- */
+/* JouerPetitRoque : Joue le petit roque                                         */
+/* Entree : int ligne : ligne ou se situe le roi et la tour                      */
+/* Sortie : void                                                                 */
+/* ----------------------------------------------------------------------------- */
+void JouerPetitRoque(int);
+
+/* ----------------------------------------------------------------------------- */
+/* JouerGrandRoque : Joue le grand roque                                         */
+/* Entree : int ligne : ligne ou se situe le roi et la tour                      */
+/* Sortie : void                                                                 */
+/* ----------------------------------------------------------------------------- */
+void JouerGrandRoque(int);
+
 /* ----------------------------------------------------------------------- */
-/* Lecture de fichier PGN ou l'entete a ete enlever                        */
+/* Lecture de fichier PGN dans lequel les entetes ont ete enlever          */
 /* Entree : char * nomFichier : nom du fichier ou sont stocker les parties */
 /* Sortie : void                                                           */
 /* ----------------------------------------------------------------------- */
