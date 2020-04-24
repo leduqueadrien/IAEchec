@@ -4,8 +4,11 @@
 #ifndef ECHEC
 #define ECHEC
 
-/* Enumeration pour l'association piece numero                                    */
-/* Les pieces de l'IA sont positives et les pieces de l'adversaire sont negatives */
+/* -------------------------------------------------------------------------- */
+/* Enumeration pour l'association piece numero                                */
+/* Rmq : Les pieces de l'IA sont positives et les pieces                      */            
+/*       de l'adversaire sont negatives                                       */
+/* -------------------------------------------------------------------------- */
 enum piece {
     Pion = 1,
     Tour = 2,
@@ -15,29 +18,24 @@ enum piece {
     Roi = 10,
 };
 
-/* -------------------------------------------------------------------------- */
-/* Structure memorisant les informations sur le plateu de jeux                */
-/* Rmq : ordinateur toujours en haut                                          */
-/* -------------------------------------------------------------------------- */
-typedef struct Plateau
+typedef struct Joueur
 {
-    int * tab;          /* Plateau de jeu. ATTENTION : Il est en une seul dimension */
-    int N;              /* Taille de la plateau : 8 */
-    char * couleurOrdi  /* "Blanc" ou "Noir" */
-} Plateau_t;
+    char * nom;
+    int EstEnEchec;
+    int EstEnEchecMat;
+    int peutPetitRoque;
+    int peutGrandRoque;
+    char couleur;
+    struct Joueur * adversaire;
+} Joueur_t;
+
 
 /* -------------------------------------------------------------------------- */
 /* Structure memorisant si les roques peuvent etre realise                    */
 /* Rmq : on peut faire le roque a partir du moment                            */
 /*        ou le roi et la tour n'ont pas encore bouger                        */
 /* -------------------------------------------------------------------------- */
-typedef struct Roque
-{
-    int peutPRJoueur;   /* Est ce que le joueur peut faire le petit roque */
-    int peutPROrdi;     /* Est ce que l'ordinateur peut faire le petit roque */
-    int peutGRJoueur;   /* Est ce que le joueur peut faire le grand roque */
-    int peutGROrdi;     /* Est ce que l'ordinateur peut faire le grand roque */
-} Roque_t;
+
 
 /* -------------------------------------------------------------------------- */
 /* Structure memorisant le dernier coup qui a ete jouer                       */
@@ -49,8 +47,24 @@ typedef struct CoupPrecedent
     int yAvant;
     int xApres;
     int yApres;
+    int valeurPieceJouer;
 } CoupPrecedent_t;
 
+
+/* -------------------------------------------------------------------------- */
+/* Structure memorisant les informations sur le plateu de jeux                */
+/* Rmq : Blanc toujours en Haut                                               */
+/* -------------------------------------------------------------------------- */
+typedef struct Plateau
+{
+    int * tab;          /* Plateau de jeu. ATTENTION : Il est en une seul dimension */
+    int N;              /* Taille de la plateau : 8 */
+    int aOrdiDeJouer;   /* Est ce a l'ordinateur de jouer */
+    struct Joueur * joueur1;
+    struct Joueur * joueur2;
+    struct Joueur * JoueurTrait;
+    struct CoupPrecedent coupPrecedent;
+} Plateau_t;
 
 /* -------------------------------------------------------------------------- */
 /* Initialiser : Initialisation du plateu, des roque et du coup precedent     */
@@ -162,6 +176,20 @@ int PossibiliterROI(int *, int, int);
 /* ----------------------------------------------------------------------------- */
 int PossibiliterDAME(int *, int, int);
 
+void DeduirPOIN(int *, int *, int, int, int);
+
+void DeduirTOUR(int *, int *, int, int);
+
+void DeduirCAVALIER(int *, int *, int, int);
+
+void DeduirFOU(int *, int *, int, int);
+
+void DeduirDAME(int *, int *, int, int);
+
+void DeduirROI(int *, int *, int, int);
+
+void DeduirCoup(int *, int *, int, int, int, int);
+
 /* ------------------------------------------------------------------------------- */
 /* JouerCoup : Joue le coup dont l'emplacement de depart et d'arriver sont donnees */
 /* Entree : int xAvant : ligne de la piece qui doit etre joue                      */
@@ -185,6 +213,28 @@ void JouerPetitRoque(int);
 /* Sortie : void                                                                 */
 /* ----------------------------------------------------------------------------- */
 void JouerGrandRoque(int);
+
+/* ----------------------------------------------------------------------------- */
+/* MAJRoque : fait la mise a jour des possibilites de jouer les roques           */
+/* Entree : int x : ligne ou se situe la piece qui vient d'etre joue             */
+/*          int y : colonne ou se situe la piece qui vient d'etre joue           */
+/* Sortie : void                                                                 */
+/* ----------------------------------------------------------------------------- */
+void MAJRoque(int, int);
+
+int ConvertirColonneInt(char carac);
+
+int ConvertirCharPiece(char carac);
+
+int ConvertLigneInt(char carac);
+
+/* ----------------------------------------------------------------------------- */
+/* LireCoup : Interprete le coup au format PGN                                   */
+/* Entree : char * coup : chaine de caractere contenant le coup a interpreter    */
+/*          int aOrdiDeJouer : booleen qui vaut 1 si c'est a l'ordi de jouer     */
+/* Sortie : void                                                                 */
+/* ----------------------------------------------------------------------------- */
+void LireCoup(char *);
 
 /* ----------------------------------------------------------------------- */
 /* Lecture de fichier PGN dans lequel les entetes ont ete enlever          */
