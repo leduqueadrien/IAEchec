@@ -26,6 +26,7 @@ typedef struct Joueur
     int peutPetitRoque;
     int peutGrandRoque;
     char couleur;
+    int signe;
     struct Joueur * adversaire;
 } Joueur_t;
 
@@ -121,7 +122,7 @@ void AfficherPlateau();
 /*          int y : colenne de la piece                                       */
 /* Sortie : char piece : Lettre coresspondant a la piece (P,T,C,F,R,D)        */
 /* -------------------------------------------------------------------------- */
-char AfficherPiece();
+char AfficherPiece(int, int);
 
 /* ----------------------------------------------------------------------------- */
 /* PossibiliterPION : Renvoit toutes les coordonnes ou le pions peut se deplacer */
@@ -178,11 +179,11 @@ int PossibiliterDAME(int *, int, int);
 
 void DeduirPOIN(int *, int *, int, int, int);
 
-void DeduirTOUR(int *, int *, int, int);
+void DeduirTOUR(int *, int *, int, int, int);
 
 void DeduirCAVALIER(int *, int *, int, int);
 
-void DeduirFOU(int *, int *, int, int);
+void DeduirFOU(int *, int *, int, int, int);
 
 void DeduirDAME(int *, int *, int, int);
 

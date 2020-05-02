@@ -3,7 +3,6 @@
 
 
 int main() {
-    InitialiserPlateau();
-    AfficherPlateau();
+    LectureFichierPGN("data/data");
     return 0;
 }

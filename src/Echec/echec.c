@@ -6,12 +6,13 @@
 
 Plateau_t plateau;
 Joueur_t joueur1;
-Joueur_t joueur2;   /* Odinateur */
+Joueur_t joueur2;   /* Ordinateur */
 
 
 void InitialiserPlateau() {
-    plateau.N = 8;
-    int tab [plateau.N*plateau.N];
+    int N = 8;
+    plateau.N = N;
+    int * tab = (int*)malloc(N*N*sizeof(int));
     plateau.tab = tab;
     plateau.joueur1 = &joueur1;
     plateau.joueur2 = &joueur2;
@@ -29,16 +30,18 @@ void InitialiserJoueur() {
     joueur1.peutPetitRoque = 1;
     joueur1.peutGrandRoque = 1;
     joueur1.couleur = 'N';
+    joueur1.signe = -1;
     joueur1.adversaire = &joueur2;
 
     // Joueur2
-    joueur1.nom = "Joueur2";
-    joueur1.EstEnEchec = 0;
-    joueur1.EstEnEchecMat = 0;
-    joueur1.peutPetitRoque = 1;
-    joueur1.peutGrandRoque = 1;
+    joueur2.nom = "Joueur2";
+    joueur2.EstEnEchec = 0;
+    joueur2.EstEnEchecMat = 0;
+    joueur2.peutPetitRoque = 1;
+    joueur2.peutGrandRoque = 1;
     joueur2.couleur = 'B';
-    joueur1.adversaire = &joueur1;
+    joueur2.signe = 1;
+    joueur2.adversaire = &joueur1;
 }
 
 void InitialiserCoupPrecedent() {
@@ -71,35 +74,35 @@ void InitialiserDebutPartie() {
             PLATEAU[7] = signe*Tour;
         // Joueur
             PLATEAU[N*7] = -signe*Tour;
-            PLATEAU[N*8-1] = -signe*Tour;
+            PLATEAU[N*7+7] = -signe*Tour;
     
     // Placement des cavaliers
         // Ordinateur
             PLATEAU[1] = signe*Cavalier;
-            PLATEAU[N-2] = signe*Cavalier;
+            PLATEAU[6] = signe*Cavalier;
         // Joueur
             PLATEAU[N*7+1] = -signe*Cavalier;
-            PLATEAU[N*8-2] = -signe*Cavalier;
+            PLATEAU[N*7+6] = -signe*Cavalier;
     
     // Placement des fous
         // Ordinateur
             PLATEAU[2] = signe*Fou;
-            PLATEAU[N-3] = signe*Fou;
+            PLATEAU[5] = signe*Fou;
         // Joueur
             PLATEAU[N*7+2] = -signe*Fou;
-            PLATEAU[N*8-3] = -signe*Fou;
+            PLATEAU[N*7+5] = -signe*Fou;
 
     // Placement des dames
         // Ordinateur
-            PLATEAU[3] = signe*Dame;
+            PLATEAU[4] = signe*Dame;
         // Joueur
-            PLATEAU[N*7+3] = -signe*Dame;
+            PLATEAU[N*7+4] = -signe*Dame;
     
     // Placement des roi
         // Ordinateur
-            PLATEAU[N-4] = signe*Roi;
+            PLATEAU[3] = signe*Roi;
         // Joueur
-            PLATEAU[N*8-4] = -signe*Roi;
+            PLATEAU[N*7+3] = -signe*Roi;
 }
 
 void RemiseAZero() {
@@ -111,10 +114,12 @@ void RemiseAZero() {
 void Initialiser() {
     InitialiserPlateau();
     InitialiserJoueur();
+    InitialiserDebutPartie();
 }
 
 char AfficherPiece(int x, int y) {
-    switch (abs(plateau.tab[x*plateau.N + y]))
+    int valPiece = abs(plateau.tab[x*plateau.N + y]);
+    switch (valPiece)
     {
     case Pion:
         return 'P';
@@ -143,7 +148,7 @@ char AfficherPiece(int x, int y) {
 void AfficherPlateau() {
 	/* RAPPEL : En memoire, le joueur blanc est toujours en haut */
 	/* 			MAIS a l'affichage, c'est le joueur2 qui est en Haut */
-
+    system("clear");
     printf("-------------------------\n");
 	
 	// Joueur2 en blanc
@@ -151,25 +156,25 @@ void AfficherPlateau() {
 		for (int i=0; i<8; i++) {
 			printf("|");
 			for (int j=0; j<8; j++)
-				printf("%c |",AfficherPiece(i,j));
+				printf("%c |", AfficherPiece(i,j));
 			printf("\n-------------------------\n");
 		}
 	} else {
 		for (int i=7; i>=0; i--) {
 			printf("|");
 			for (int j=7; j>=0; j--)
-				printf("%c |",AfficherPiece(i,j));
+				printf("%c |", AfficherPiece(i,j));
 			printf("\n-------------------------\n");
 		}
 	}
 	
+	if ((*(*plateau.joueur1).adversaire).EstEnEchec == 1)
+		printf("%s est en Echec\n", (*(*plateau.JoueurTrait).adversaire).nom);
+
+	if ((*(*plateau.joueur1).adversaire).EstEnEchec == 1)
+		printf("%s est en Echec et Mat\n", (*(*plateau.JoueurTrait).adversaire).nom);
+    
     printf("\n");
-
-	if ((*(*plateau.joueur1).adversaire).EstEnEchec == 1)
-		printf("%s est en Echec", (*(*plateau.JoueurTrait).adversaire).nom);
-
-	if ((*(*plateau.joueur1).adversaire).EstEnEchec == 1)
-		printf("%s est en Echec et Mat", (*(*plateau.JoueurTrait).adversaire).nom);
 }
 
 int PossibiliterPION(int * tabPossibiliter, int x, int y) {
@@ -177,7 +182,8 @@ int PossibiliterPION(int * tabPossibiliter, int x, int y) {
     int priseRoi = 0;
     int N = plateau.N;
     int * PLATEAU = plateau.tab;
-    int signe = plateau.aOrdiDeJouer?1:-1;
+    int signe = (*plateau.JoueurTrait).signe;
+
 
     // Deplacement vers le bas
     if ((*plateau.JoueurTrait).couleur == 'B' ) {
@@ -265,7 +271,7 @@ int PossibiliterTOUR(int * tabPossibiliter, int x, int y) {
     int priseRoi = 0;
     int N = plateau.N;
     int * PLATEAU = plateau.tab;
-    int signe = plateau.aOrdiDeJouer?1:-1;
+    int signe = (*plateau.JoueurTrait).signe;
 
     // Haut et Bas
     // Si enBas=-1 alors, on parcour vers le Haut
@@ -318,7 +324,7 @@ int PossibiliterCAVALIER(int * tabPossibiliter, int x, int y) {
     int priseRoi = 0;
     int N = plateau.N;
     int * PLATEAU = plateau.tab;
-    int signe = plateau.aOrdiDeJouer?1:-1;
+    int signe = (*plateau.JoueurTrait).signe;
 
     for (int i=-2; i<=2; i+=4) {
         for (int j=-1; j<=1; j+=2) {
@@ -363,7 +369,7 @@ int PossibiliterFOU(int * tabPossibiliter, int x, int y) {
     int priseRoi = 0;
     int N = plateau.N;
     int * PLATEAU = plateau.tab;
-    int signe = plateau.aOrdiDeJouer?1:-1;
+    int signe = (*plateau.JoueurTrait).signe;
 
     // Haut
     // Si enHDroite=-1 alors, Haut Gauche
@@ -418,7 +424,7 @@ int PossibiliterROI(int * tabPossibiliter, int x, int y) {
     int priseRoi = 0;
     int N = plateau.N;
     int * PLATEAU = plateau.tab;
-    int signe = plateau.aOrdiDeJouer?1:-1;
+    int signe = (*plateau.JoueurTrait).signe;
 
     for (int i=x-1; i<=x+1; i++) {
         for (int j=y-1; j<=y+1; j++){
@@ -465,9 +471,10 @@ void DeduirPOIN(int * xAvant, int * yAvant, int xApres, int yApres, int prisePie
 	int * PLATEAU = plateau.tab;
 	int N = plateau.N;
 	/* Permet de changer le signe de la valeur des pieces en fonction du joueur qui a le trait */
-	int signe = plateau.aOrdiDeJouer?1:-1;
+    int signe = (*plateau.JoueurTrait).signe;
 	/* Permet de changer la direction des pions en fonction de qui a le trait et de ca couleur */
-	int monter = (*plateau.JoueurTrait).couleur=='B'?1:-1;
+	int monter = (*plateau.JoueurTrait).couleur=='B'?-1:1;
+    int valeurPiece = signe*Pion;
 
 	// Prise en passant
 	if (prisePiece == 1 && PLATEAU[xApres*N + yApres] == 0) {
@@ -475,7 +482,7 @@ void DeduirPOIN(int * xAvant, int * yAvant, int xApres, int yApres, int prisePie
 		if (*xAvant == -1) {
 			*xAvant = xApres+monter;
 			if (*yAvant == -1) {
-				if (yApres-1 >= 0 && PLATEAU[*xAvant*N + yApres-1] == signe*Pion)
+				if (yApres-1 >= 0 && PLATEAU[*xAvant*N + yApres-1] == valeurPiece)
 					*yAvant = yApres-1;
 				else
 					*yAvant = yApres+1;
@@ -489,7 +496,7 @@ void DeduirPOIN(int * xAvant, int * yAvant, int xApres, int yApres, int prisePie
 		if (prisePiece == 1) {
 			*xAvant = xApres+monter;
 		} else {
-			if (PLATEAU[(xApres+monter)*N + *yAvant] == signe*Pion)
+			if (PLATEAU[(xApres+monter)*N + *yAvant] == valeurPiece)
 				*xAvant = xApres + monter;
 			else
 				*xAvant = xApres + 2*monter;
@@ -499,13 +506,13 @@ void DeduirPOIN(int * xAvant, int * yAvant, int xApres, int yApres, int prisePie
 		// Quasiment meme test
 		if (prisePiece == 1) {
 			*xAvant = xApres + monter;
-			if (yApres-1 >= 0 && PLATEAU[(*xAvant)*N + yApres-1] == signe*Pion)
+			if (yApres-1 >= 0 && PLATEAU[(*xAvant)*N + yApres-1] == valeurPiece)
 				*yAvant = yApres - 1;
 			else
 				*yAvant = yApres + 1;
 		} else {
 			*yAvant = yApres;
-			if (PLATEAU[(xApres+monter)*N + *yAvant] == signe*Pion)
+			if (PLATEAU[(xApres+monter)*N + *yAvant] == valeurPiece)
 				*xAvant = xApres + monter;
 			else
 				*xAvant = xApres + 2*monter;
@@ -516,10 +523,11 @@ void DeduirPOIN(int * xAvant, int * yAvant, int xApres, int yApres, int prisePie
 
 }
 
-void DeduirTOUR(int * xAvant, int * yAvant, int xApres, int yApres) {
+void DeduirTOUR(int * xAvant, int * yAvant, int xApres, int yApres, int estDame) {
     int * PLATEAU = plateau.tab;
     int N = plateau.N;
-    int signe = plateau.aOrdiDeJouer?1:-1;
+    int signe = (*plateau.JoueurTrait).signe;
+    int valeurPiece = signe*(estDame==1?Dame:Tour);
 
     if ( *xAvant != -1 && *xAvant != xApres) {
         *yAvant = yApres;
@@ -534,18 +542,18 @@ void DeduirTOUR(int * xAvant, int * yAvant, int xApres, int yApres) {
 
     if (*xAvant == -1) {
         int i = 1;
-        while (i >= 0 && PLATEAU[(xApres-i)*N + yApres] != signe*Tour)
+        while (xApres-i >= 0 && PLATEAU[(xApres-i)*N + yApres] != valeurPiece)
             i++;
-        if (i >= 0) {
+        if (xApres-i >= 0) {
             *xAvant = xApres - i;
             *yAvant = yApres;
             return;
         }
 
         i = 1;
-        while (i < N && PLATEAU[(xApres+i)*N + yApres] != signe*Tour)
+        while (xApres+i < N && PLATEAU[(xApres+i)*N + yApres] != valeurPiece)
             i++;
-        if ( i < N) {
+        if ( xApres+i < N) {
             *xAvant = xApres + i;
             *yAvant = yApres;
             return;
@@ -554,18 +562,18 @@ void DeduirTOUR(int * xAvant, int * yAvant, int xApres, int yApres) {
 
     if (*yAvant == -1) {
         int j = 1;
-        while (j >= 0 && PLATEAU[xApres*N + yApres-j] != signe*Tour)
+        while (yApres-j >= 0 && PLATEAU[xApres*N + yApres-j] != valeurPiece)
             j++;
-        if (j >= 0) {
+        if (yApres-j >= 0) {
             *xAvant = xApres;
             *yAvant = yApres - j;
             return;
         }
 
         j = 1;
-        while (j < N && PLATEAU[xApres*N + yApres+j] != signe*Tour)
+        while (yApres+j < N && PLATEAU[xApres*N + yApres+j] != valeurPiece)
             j++;
-        if (j < N) {
+        if (yApres+j < N) {
             *xAvant = xApres;
             *yAvant = yApres + j;
             return;
@@ -578,19 +586,20 @@ void DeduirTOUR(int * xAvant, int * yAvant, int xApres, int yApres) {
 void DeduirCAVALIER(int * xAvant, int * yAvant, int xApres, int yApres) {
     int * PLATEAU = plateau.tab;
     int N = plateau.N;
-	int signe = plateau.aOrdiDeJouer?1:-1;
+    int signe = (*plateau.JoueurTrait).signe;
+    int valeurPiece = signe*Cavalier;
 
     if (*xAvant != -1) {
         int yEcart = abs(*xAvant-xApres)==1?2:1;
-        if (yApres-yEcart >= 0 && PLATEAU[*xAvant*N + yApres-yEcart] == signe*Cavalier)
+        if (yApres-yEcart >= 0 && PLATEAU[*xAvant*N + yApres-yEcart] == valeurPiece)
             *yAvant = yApres-yEcart;
         else
             *yAvant = yApres+yEcart;
     }
 
     if (*yAvant != -1) {
-        int xEcart = abs(*yAvant-yApres);
-        if (xApres-xEcart >= 0 && PLATEAU[(xApres-xEcart)*N + *yAvant] == signe*Cavalier)
+        int xEcart = abs(*yAvant-yApres)==1?2:1;
+        if (xApres-xEcart >= 0 && PLATEAU[(xApres-xEcart)*N + *yAvant] == valeurPiece)
             *xAvant = xApres-xEcart;
         else
             *xAvant = xApres+xEcart;
@@ -600,7 +609,7 @@ void DeduirCAVALIER(int * xAvant, int * yAvant, int xApres, int yApres) {
         for (int i=-2; i<=2; i+=4) {
             for (int j=-1; j<=1; j+=2) {
                 if (xApres+i >= 0 && xApres+i < N && yApres+j >= 0 && yApres+j < N) {
-                    if (PLATEAU[(xApres+i)*N + yApres+j] == signe*Cavalier) {
+                    if (PLATEAU[(xApres+i)*N + yApres+j] == valeurPiece) {
                         *xAvant = xApres + i;
                         *yAvant = yApres + j;
                         return;
@@ -612,7 +621,7 @@ void DeduirCAVALIER(int * xAvant, int * yAvant, int xApres, int yApres) {
         for (int j=-2; j<=2; j+=4) {
             for (int i=-1; i<=1; i+=2) {
                 if (xApres+i >= 0 && xApres+i < N && yApres+j >= 0 && yApres+j < N) {
-                    if (PLATEAU[(xApres+i)*N + yApres+j] == signe*Cavalier) {
+                    if (PLATEAU[(xApres+i)*N + yApres+j] == valeurPiece) {
                         *xAvant = xApres + i;
                         *yAvant = yApres + j;
                         return;
@@ -624,14 +633,15 @@ void DeduirCAVALIER(int * xAvant, int * yAvant, int xApres, int yApres) {
 
 }
 
-void DeduirFOU(int * xAvant, int * yAvant, int xApres, int yApres) {
+void DeduirFOU(int * xAvant, int * yAvant, int xApres, int yApres, int estDame) {
     int * PLATEAU = plateau.tab;
     int N = plateau.N;
-    int signe = plateau.aOrdiDeJouer?1:-1;
+    int signe = (*plateau.JoueurTrait).signe;
+    int valeurPiece = signe*(estDame==1?Dame:Fou);
 
     if (*xAvant != -1) {
         // 2 possibilites
-        if (yApres-1 >= 0 && PLATEAU[*xAvant*N + yApres-1] == signe*Fou)
+        if (yApres-1 >= 0 && PLATEAU[*xAvant*N + yApres-1] == valeurPiece)
             *yAvant = yApres-1;
         else
             *yAvant = yApres+1;
@@ -640,7 +650,7 @@ void DeduirFOU(int * xAvant, int * yAvant, int xApres, int yApres) {
 
     if (*yAvant != -1) {
         // 2 possibilites
-        if (xApres-1 >= 0 && PLATEAU[(xApres-1)*N + *yAvant] == signe*Fou)
+        if (xApres-1 >= 0 && PLATEAU[(xApres-1)*N + *yAvant] == valeurPiece)
             *xAvant = xApres-1;
         else
             *xAvant = xApres+1;
@@ -649,61 +659,84 @@ void DeduirFOU(int * xAvant, int * yAvant, int xApres, int yApres) {
 
     // Il ne reste plus que le cas ou ni la ligne ni la colonne sont indique
 
-    int enBas  = -1;
-    int aDroite = -1;
+    // Haut Gauche
     int i = 1;
-
-    while (enBas <= 1 && PLATEAU[(xApres+enBas*i)*N + yApres+aDroite*i] != signe*Fou) {
-        aDroite = -1;
-        while(aDroite <= 1 && PLATEAU[(xApres+enBas*i)*N + yApres+aDroite*i] != signe*Fou) {
-            i = 1;
-            while (xApres+enBas*i >= 0 && xApres+enBas*i < N
-                && yApres+aDroite*i >= 0 && yApres+aDroite*i < N
-                && PLATEAU[(xApres+enBas*i) + yApres+aDroite*i] != signe*Fou)
-                i++;
-            aDroite += 2;
-        }
-        enBas += 2;
+    while (xApres-i >= 0 && yApres-i >= 0 && PLATEAU[(xApres-i)*N + yApres-i] != valeurPiece)
+        i++;
+    if (xApres-i >= 0 && yApres-i >= 0) {
+        *xAvant = xApres-i;
+        *yAvant = yApres-i;
+        return;
     }
 
-    *xAvant = xApres + enBas*i;
-    *yAvant = yApres + aDroite*i;
+    // Haut Droite
+    i = 1;
+    while (xApres-i >= 0 && yApres+i < N && PLATEAU[(xApres-i)*N + yApres+i] != valeurPiece)
+        i++;
+    if (xApres-i >= 0 && yApres+i != N) {
+        *xAvant = xApres-i;
+        *yAvant = yApres+i;
+        return;
+    }
+
+    // Bas Gauche
+    i = 1;
+    while (xApres+i < N && yApres-i >= 0 && PLATEAU[(xApres+i)*N + yApres-i] != valeurPiece)
+        i++;
+    if (xApres+i != N && yApres-i >= 0) {
+        *xAvant = xApres+i;
+        *yAvant = yApres-i;
+        return;
+    }
+
+    // Bas Droite
+    i = 1;
+    while (xApres+i < N && yApres+i < N && PLATEAU[(xApres+i)*N + yApres+i] != valeurPiece)
+        i++;
+    if (xApres != N && yApres != N) {
+        *xAvant = xApres+i;
+        *yAvant = yApres+i;
+        return;
+    }
+
+
 }
 
 void DeduirDAME(int * xAvant, int * yAvant, int xApres, int yApres) {
-    DeduirTOUR(xAvant, yAvant, xApres, yApres);
+    DeduirTOUR(xAvant, yAvant, xApres, yApres, 1);
     if (*xAvant == -1 || *yAvant == -1)
-    DeduirFOU(xAvant, yAvant, xApres, yApres);
+        DeduirFOU(xAvant, yAvant, xApres, yApres, 1);
 }
 
 void DeduirROI(int * xAvant, int * yAvant, int xApres, int yApres) {
     int * PLATEAU = plateau.tab;
     int N = plateau.N;
-    int signe = plateau.aOrdiDeJouer?1:-1;
+    int signe = (*plateau.JoueurTrait).signe;
+    int valeurPiece = signe*Roi;
 
     if (*xAvant != -1) {
-        if (yApres-1 >= 0 && PLATEAU[*xAvant*N + yApres-1] == signe*Roi)
+        if (yApres-1 >= 0 && PLATEAU[*xAvant*N + yApres-1] == valeurPiece)
             *yAvant = yApres - 1;
-        else if (PLATEAU[*xAvant*N + yApres] == signe*Roi)
+        else if (PLATEAU[*xAvant*N + yApres] == valeurPiece)
             *yAvant = yApres;
         else
             *yAvant = yApres + 1;
     }
 
     if (*yAvant != -1) {
-        if (xApres-1 >= 0 && PLATEAU[(xApres-1)*N + *yAvant] != signe*Roi)
+        if (xApres-1 >= 0 && PLATEAU[(xApres-1)*N + *yAvant] != valeurPiece)
             *xAvant = xApres - 1;
-        else if (PLATEAU[xApres*N + *yAvant] != signe*Roi)
+        else if (PLATEAU[xApres*N + *yAvant] != valeurPiece)
             *xAvant = xApres;
         else
             *xAvant = xApres + 1;
     }
 
     if (*xAvant == -1 && *yAvant == -1) {
-        for (int i=-1; i<=1; i+=2)
-            for (int j=-1; j<=1; j+=2)
+        for (int i=-1; i<=1; i+=1)
+            for (int j=-1; j<=1; j+=1)
                 if (xApres+i >= 0 && xApres+i < N && yApres+j >= 0 && yApres+j < N)
-                    if (PLATEAU[(xApres+i)*N + yApres] == signe*Roi) {
+                    if (PLATEAU[(xApres+i)*N + yApres+j] == valeurPiece) {
                         *xAvant = xApres+i;
                         *yAvant = yApres+j;
                         return;
@@ -716,13 +749,13 @@ void DeduirCoup(int * xAvant, int * yAvant, int xApres, int yApres, int piece, i
     switch (abs(piece))
     {
     case Tour:
-        DeduirTOUR(xAvant, yAvant, xApres, yApres);
+        DeduirTOUR(xAvant, yAvant, xApres, yApres, 0);
         break;
     case Cavalier:
         DeduirCAVALIER(xAvant, yAvant, xApres, yApres);
         break;
     case Fou:
-        DeduirFOU(xAvant, yAvant, xApres, yApres);
+        DeduirFOU(xAvant, yAvant, xApres, yApres, 0);
         break;
     case Dame:
         DeduirDAME(xAvant, yAvant, xApres, yApres);
@@ -816,7 +849,7 @@ void JouerGrandRoque(int x) {
 
 void LireCoup(char * coup) {
     char * cour = coup;
-    int signe = plateau.aOrdiDeJouer==1?1:-1;
+    int signe = (*plateau.JoueurTrait).signe;
     int valPiece;
     int xAvant = -1;
     int yAvant = -1;
@@ -835,7 +868,7 @@ void LireCoup(char * coup) {
         else
             x = 7;
 
-        if (!strcmp(coup, "O-O"))
+        if (strcmp(coup, "O-O") <= 50)
             JouerPetitRoque(x); // Petit roque
         else
             JouerPetitRoque(x); // Grand roque
@@ -848,7 +881,7 @@ void LireCoup(char * coup) {
 
         // Recuperation de la position apres avoir jouer le coup
         // Si indiquer, recuperation de la position initiale
-        while (*cour != '=' && *cour != '+' && *cour != '#'  ) {
+        while (*cour != '\0' && *cour != '=' && *cour != '+' && *cour != '#'  ) {
             if (*cour < 57) {
                 if (xApres != -1)
                     xAvant = xApres;
@@ -939,10 +972,15 @@ void LectureFichierPGN(char * nomFichier) {
     
     if (file != NULL) {
         int  finPartie = 0;
+        Initialiser();
+        AfficherPlateau();
         
         // Le joueur blanc est l'ordinateur
         plateau.JoueurTrait = &joueur1;
 
+
+        // On enleve le "1." qui commence la partie
+        fscanf(file, "%s", coup);
 
         do {
             // Je change le joueur qui a le trait
@@ -956,8 +994,8 @@ void LectureFichierPGN(char * nomFichier) {
 
 			AfficherPlateau();
 
-            printf("Press ENTER to continue");
-            scanf("");
+            printf("tap n to continue\n\n");
+            scanf("%s", coup);
 
 			// Je recupere le prochaine coup et je regarde si c'est la fin
 			fscanf(file, "%s", coup);
@@ -967,4 +1005,5 @@ void LectureFichierPGN(char * nomFichier) {
     } else {
         printf("Fichier %s ne peut pas etre ouvert\n", nomFichier);
     }
+    system("clear");
 }
