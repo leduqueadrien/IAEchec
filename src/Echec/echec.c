@@ -1,12 +1,11 @@
 
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include"echec.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "echec.h"
+#include "AffichageEchec.h"
 
-Plateau_t plateau;
-Joueur_t joueur1;
-Joueur_t joueur2;   /* Ordinateur */
+
 
 
 void InitialiserPlateau(char couleurJouerHaut) {
@@ -118,148 +117,55 @@ void Initialiser(char couleurJoueur1, char couleurJoueurHaut) {
     InitialiserDebutPartie();
 }
 
-char AfficherPiece(int x, int y) {
-    int valPiece = abs(plateau.tab[x*plateau.N + y]);
-    switch (valPiece)
-    {
-    case Pion:
-        return 'P';
-        break;
-    case Tour:
-        return 'T';
-        break;
-    case Cavalier:
-        return 'C';
-        break;
-    case Fou:
-        return 'F';
-        break;
-    case Dame:
-        return 'D';
-        break;
-    case Roi:
-        return 'R';
-        break;
-    default:
-        return ' ';
-        break;
-    }
-}
-
-void AfficherPlateau() {
-	/* RAPPEL : En memoire, le joueur blanc est toujours en haut */
-	/* 			MAIS a l'affichage, c'est le joueur2 qui est en Haut */
-    system("clear");
-    printf("-------------------------\n");
-	
-	// Joueur2 en blanc
-	if (plateau.couleurJoueurHaut == 'B') {
-		for (int i=0; i<8; i++) {
-			printf("|");
-			for (int j=0; j<8; j++)
-				printf("%c |", AfficherPiece(i,j));
-			printf("\n-------------------------\n");
-		}
-	} else {
-		for (int i=7; i>=0; i--) {
-			printf("|");
-			for (int j=7; j>=0; j--)
-				printf("%c |", AfficherPiece(i,j));
-			printf("\n-------------------------\n");
-		}
-	}
-	
-	if ((*(*plateau.JoueurTrait).adversaire).EstEnEchec == 1)
-		printf("%s est en Echec\n", (*(*plateau.JoueurTrait).adversaire).nom);
-
-	if ((*(*plateau.JoueurTrait).adversaire).EstEnEchec == 1)
-		printf("%s est en Echec et Mat\n", (*(*plateau.JoueurTrait).adversaire).nom);
-    
-    printf("\n");
-}
-
 int PossibiliterPION(int * tabPossibiliter, int x, int y) {
-    int nb = 0;
-    int priseRoi = 0;
+    int nb = 0; /* compteur du nombre de possibilite trouve */
+    int priseRoi = 0;   /* Est ce que le pion peut prendre le roi (valeur de retour) */
     int N = plateau.N;
     int * PLATEAU = plateau.tab;
-    int signe = (*plateau.JoueurTrait).signe;
+    int signe = (*plateau.JoueurTrait).signe;   /* signe de la piece */
+    int dir = (*plateau.JoueurTrait).couleur == 'B'?1:-1;   /* Direction du deplacement */
+                                                            /* dir=1 : deplacement vers le bas */
+                                                            /* dir=-1 : deplacement vers le haut */
 
-
-    // Deplacement vers le bas
-    if ((*plateau.JoueurTrait).couleur == 'B' ) {
-        // Deplacement normal
-        if (x+1 < N && PLATEAU[N*(x+1) + y] == 0) {
-            tabPossibiliter[2*nb] = x+1;
+        // Deplacement normal (deplacement d'une case)
+        if (x+1 < N && PLATEAU[N*(x+dir*1) + y] == 0) {
+            tabPossibiliter[2*nb] = x+dir*1;
             tabPossibiliter[2*nb+1] = y;
             nb ++;
         }
 
-        // Deplacement premier coup
-        if (x == 1 && PLATEAU[N*(x+2) + y] == 0) {
-            tabPossibiliter[2*nb] = x+2;
-            tabPossibiliter[2*nb+1] = y;
-            nb ++;
+        // Deplacement premier coup (deplacement de deux cases)
+        if ((x == 1 && dir == 1) || (x == 6 && dir == -1)) {
+            if (x == 1 && PLATEAU[N*(x+dir*2) + y] == 0) {
+                tabPossibiliter[2*nb] = x+dir*2;
+                tabPossibiliter[2*nb+1] = y;
+                nb ++;
+            }
         }
 
-        // Prise normal
-        if (x+1 < N) {
-            if (y-1 >= 0 && signe*PLATEAU[(x+1)*N + y-1] <= 0) {
-                if (PLATEAU[(x+1)*N + y-1] == -signe*Roi) {
+        // Prise normal (deplacement diagonal)
+        if (x+dir*1 < N) {
+            if (y-1 >= 0 && signe*PLATEAU[(x+dir*1)*N + y-1] <= 0) {
+                if (PLATEAU[(x+dir*1)*N + y-1] == -signe*Roi) {
                     priseRoi = 1;
                 } else {
-                    tabPossibiliter[2*nb] = x+1;
+                    tabPossibiliter[2*nb] = x+dir*1;
                     tabPossibiliter[2*nb+1] = y-1;
                     nb ++;
                 }
             }
-            if (y+1 < N && signe*PLATEAU[(x+1)*N + y+1] <+ 0) {
-                if (PLATEAU[(x+1)*N + y+1] == -signe*Roi) {
+            if (y+1 < N && signe*PLATEAU[(x+dir*1)*N + y+1] <= 0) {
+                if (PLATEAU[(x+dir*1)*N + y+1] == -signe*Roi) {
                     priseRoi = 1;
                 } else {
-                    tabPossibiliter[2*nb] = x+1;
+                    tabPossibiliter[2*nb] = x+dir*1;
                     tabPossibiliter[2*nb+1] = y+1;
                     nb ++;
                 }
             }
         }
-    } else {
-        // Deplacement normal
-        if (x-1 >= 0 && PLATEAU[N*(x-1) + y] == 0) {
-            tabPossibiliter[2*nb] = x-1;
-            tabPossibiliter[2*nb+1] = y;
-            nb ++;
-        }
 
-        // Deplacement premier coup
-        if (x == 6 && PLATEAU[N*(x-2) + y] == 0) {
-            tabPossibiliter[2*nb] = x-2;
-            tabPossibiliter[2*nb+1] = y;
-            nb ++;
-        }
-
-        // Prise normal
-        if (x-1 >= 0) {
-            if (y-1 >= 0 && signe*PLATEAU[(x-1)*N + y-1] <= 0) {
-                if (PLATEAU[(x-1)*N + y-1] == -signe*Roi) {
-                    priseRoi = 1;
-                } else {
-                    tabPossibiliter[2*nb] = x-1;
-                    tabPossibiliter[2*nb+1] = y-1;
-                    nb ++;
-                }
-            }
-            if (y+1 < N && signe*PLATEAU[(x-1)*N + y+1] <= 0) {
-                if (PLATEAU[(x-1)*N + y+1] == -signe*Roi) {
-                    priseRoi = 1;
-                } else {
-                    tabPossibiliter[2*nb] = x-1;
-                    tabPossibiliter[2*nb+1] = y+1;
-                    nb ++;
-                }
-            }
-        }
-    }
+        // Prise en passant (A Faire)
 
     tabPossibiliter[2*nb] = -1;
     tabPossibiliter[2*nb+1] = -1;
@@ -473,7 +379,7 @@ void DeduirPOIN(int * xAvant, int * yAvant, int xApres, int yApres, int prisePie
 	int N = plateau.N;
 	/* Permet de changer le signe de la valeur des pieces en fonction du joueur qui a le trait */
     int signe = (*plateau.JoueurTrait).signe;
-	/* Permet de changer la direction des pions en fonction de qui a le trait et de ca couleur */
+	/* Permet de changer la dir des pions en fonction de qui a le trait et de ca couleur */
 	int monter = (*plateau.JoueurTrait).couleur=='B'?-1:1;
     int valeurPiece = signe*Pion;
 

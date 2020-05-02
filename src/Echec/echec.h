@@ -68,6 +68,10 @@ typedef struct Plateau
     struct CoupPrecedent coupPrecedent;
 } Plateau_t;
 
+Plateau_t plateau;
+Joueur_t joueur1;
+Joueur_t joueur2;   /* Ordinateur */
+
 /* -------------------------------------------------------------------------- */
 /* Initialiser : Initialisation du plateu, des roque et du coup precedent     */
 /* Entree : void                                                              */
