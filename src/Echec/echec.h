@@ -58,9 +58,10 @@ typedef struct CoupPrecedent
 /* -------------------------------------------------------------------------- */
 typedef struct Plateau
 {
-    int * tab;          /* Plateau de jeu. ATTENTION : Il est en une seul dimension */
+    int * tab;          /* Plateau de jeu. ATTENTION : Il est en une seul dimension. Blanc toujours en Haut */
     int N;              /* Taille de la plateau : 8 */
     int aOrdiDeJouer;   /* Est ce a l'ordinateur de jouer */
+    char couleurJoueurHaut; /* Couleur du joueur qui sera afficher en haut */
     struct Joueur * joueur1;
     struct Joueur * joueur2;
     struct Joueur * JoueurTrait;
@@ -72,14 +73,14 @@ typedef struct Plateau
 /* Entree : void                                                              */
 /* Sortie : void                                                              */
 /* -------------------------------------------------------------------------- */
-void Initialiser();
+void Initialiser(char, char);
 
 /* -------------------------------------------------------------------------- */
 /* InitialiserPlateau : Initialise le plateau                                 */
 /* Entree : void                                                              */
 /* Sortie : void                                                              */
 /* -------------------------------------------------------------------------- */
-void InitialiserPlateau();
+void InitialiserPlateau(char);
 
 /* -------------------------------------------------------------------------- */
 /* InitialiserRoque : Initialise tous les roques, ils peuvent tous etre jouer */

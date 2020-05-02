@@ -9,11 +9,12 @@ Joueur_t joueur1;
 Joueur_t joueur2;   /* Ordinateur */
 
 
-void InitialiserPlateau() {
+void InitialiserPlateau(char couleurJouerHaut) {
     int N = 8;
     plateau.N = N;
     int * tab = (int*)malloc(N*N*sizeof(int));
     plateau.tab = tab;
+    plateau.couleurJoueurHaut = couleurJouerHaut;
     plateau.joueur1 = &joueur1;
     plateau.joueur2 = &joueur2;
     plateau.JoueurTrait = &joueur1;
@@ -21,7 +22,7 @@ void InitialiserPlateau() {
     InitialiserCoupPrecedent();
 }
 
-void InitialiserJoueur() {
+void InitialiserJoueur(char couleurJoueur1) {
 
     // Joueur1
     joueur1.nom = "Joueur1";
@@ -29,7 +30,7 @@ void InitialiserJoueur() {
     joueur1.EstEnEchecMat = 0;
     joueur1.peutPetitRoque = 1;
     joueur1.peutGrandRoque = 1;
-    joueur1.couleur = 'N';
+    joueur1.couleur = couleurJoueur1;
     joueur1.signe = -1;
     joueur1.adversaire = &joueur2;
 
@@ -39,7 +40,7 @@ void InitialiserJoueur() {
     joueur2.EstEnEchecMat = 0;
     joueur2.peutPetitRoque = 1;
     joueur2.peutGrandRoque = 1;
-    joueur2.couleur = 'B';
+    joueur2.couleur = couleurJoueur1=='B'?'N':'B';
     joueur2.signe = 1;
     joueur2.adversaire = &joueur1;
 }
@@ -111,9 +112,9 @@ void RemiseAZero() {
         plateau.tab[i] = 0;
 }
 
-void Initialiser() {
-    InitialiserPlateau();
-    InitialiserJoueur();
+void Initialiser(char couleurJoueur1, char couleurJoueurHaut) {
+    InitialiserPlateau(couleurJoueurHaut);
+    InitialiserJoueur(couleurJoueur1);
     InitialiserDebutPartie();
 }
 
@@ -152,7 +153,7 @@ void AfficherPlateau() {
     printf("-------------------------\n");
 	
 	// Joueur2 en blanc
-	if (joueur2.couleur == 'B') {
+	if (plateau.couleurJoueurHaut == 'B') {
 		for (int i=0; i<8; i++) {
 			printf("|");
 			for (int j=0; j<8; j++)
@@ -168,10 +169,10 @@ void AfficherPlateau() {
 		}
 	}
 	
-	if ((*(*plateau.joueur1).adversaire).EstEnEchec == 1)
+	if ((*(*plateau.JoueurTrait).adversaire).EstEnEchec == 1)
 		printf("%s est en Echec\n", (*(*plateau.JoueurTrait).adversaire).nom);
 
-	if ((*(*plateau.joueur1).adversaire).EstEnEchec == 1)
+	if ((*(*plateau.JoueurTrait).adversaire).EstEnEchec == 1)
 		printf("%s est en Echec et Mat\n", (*(*plateau.JoueurTrait).adversaire).nom);
     
     printf("\n");
@@ -972,7 +973,7 @@ void LectureFichierPGN(char * nomFichier) {
     
     if (file != NULL) {
         int  finPartie = 0;
-        Initialiser();
+        Initialiser('N', 'B');
         AfficherPlateau();
         
         // Le joueur blanc est l'ordinateur
@@ -994,8 +995,8 @@ void LectureFichierPGN(char * nomFichier) {
 
 			AfficherPlateau();
 
-            printf("tap n to continue\n\n");
-            scanf("%s", coup);
+            //printf("tap n to continue\n\n");
+            //scanf("%s", coup);
 
 			// Je recupere le prochaine coup et je regarde si c'est la fin
 			fscanf(file, "%s", coup);
