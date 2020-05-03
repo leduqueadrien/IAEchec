@@ -428,6 +428,14 @@ int EstCeFinPartie(char * coup) {
     return 0;
 }
 
+void MAJNumTour (char * coup) {
+    char * cour = coup;
+    while (*cour != '.')
+        cour++;
+    *cour = '\0';
+    plateau.numTour = atoi(coup);
+}
+
 void LectureFichierPGN(char * nomFichier) {
     FILE * file = fopen(nomFichier, "r");
     char coup [10];
@@ -435,29 +443,35 @@ void LectureFichierPGN(char * nomFichier) {
     if (file != NULL) {
         int  finPartie = 0;
         Initialiser('N', 'B');
-        AfficherPlateau();
         
-        // Le joueur blanc est l'ordinateur
-        plateau.JoueurTrait = &joueur1;
+        // Le joueur blanc commence. Donc le joueur noir doit avoir le trait
+        if (joueur1.couleur == 'N')
+            plateau.JoueurTrait = &joueur1;
+        else
+            plateau.JoueurTrait = &joueur2;
 
 
-        // On enleve le "1." qui commence la partie
+        // On lit le numero du tour
         fscanf(file, "%s", coup);
 
         do {
             // Je change le joueur qui a le trait
             plateau.JoueurTrait = (*plateau.JoueurTrait).adversaire;
+			
+            AfficherPlateau();
 
             // Je recupere le coup si il n'a pas encore ete recupere pour le test de fin de partie
-            if ((*plateau.JoueurTrait).couleur == 'B')
+            // J'actualise le numero du tour si il faut le faire (i.e. c'est au tour des Blanc)
+            if ((*plateau.JoueurTrait).couleur == 'B') {
+                MAJNumTour(coup);
                 fscanf(file, "%s", coup);
+            }
 
 			LireCoup(coup);
 
-			AfficherPlateau();
 
-            //printf("tap n to continue\n\n");
-            //scanf("%s", coup);
+            printf("tap n to continue\n\n");
+            scanf("%s", coup);
 
 			// Je recupere le prochaine coup et je regarde si c'est la fin
 			fscanf(file, "%s", coup);

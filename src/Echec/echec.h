@@ -58,10 +58,11 @@ typedef struct CoupPrecedent
 /* -------------------------------------------------------------------------- */
 typedef struct Plateau
 {
-    int * tab;          /* Plateau de jeu. ATTENTION : Il est en une seul dimension. Blanc toujours en Haut */
-    int N;              /* Taille de la plateau : 8 */
-    int aOrdiDeJouer;   /* Est ce a l'ordinateur de jouer */
+    int * tab;              /* Plateau de jeu. ATTENTION : Il est en une seul dimension. Blanc toujours en Haut */
+    int N;                  /* Taille de la plateau : 8 */
+    int aOrdiDeJouer;       /* Est ce a l'ordinateur de jouer */
     char couleurJoueurHaut; /* Couleur du joueur qui sera afficher en haut */
+    int numTour;            /* Compteur de tour Rappel: Un tour contient un coup de chaque joueur */
     struct Joueur * joueur1;
     struct Joueur * joueur2;
     struct Joueur * JoueurTrait;

@@ -34,7 +34,13 @@ char AfficherPiece(int x, int y) {
 void AfficherPlateau() {
 	/* RAPPEL : En memoire, le joueur blanc est toujours en haut */
 	/* 			MAIS a l'affichage, c'est le joueur2 qui est en Haut */
-    //ClrScreen();
+
+    // On affiche le numero du tour
+
+    system("clear");
+
+    printf("Tour numero : %d\n", plateau.numTour);
+    printf("C'est a \"%s\" de jouer %c\n", (*plateau.JoueurTrait).nom, (*plateau.JoueurTrait).couleur);
 	
 	// Joueur2 en blanc
 	if (plateau.couleurJoueurHaut == 'B') {
