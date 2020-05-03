@@ -242,6 +242,22 @@ int PossibiliterTOUR(int * tabPossibiliter, int x, int y) {
 		} while (j>=0 && j<N && PLATEAU[N*x+j]);
 	}
 
+	// Petit Roque
+	if ((*plateau.JoueurTrait).peutPetitRoque == 1 && x == 0) {
+		if (PLATEAU[x*N + 1] == 0 && PLATEAU[x*N + 2] == 0) {
+			tabPossibiliter[2*nb] = x;
+			tabPossibiliter[2*nb+1] = 3;
+		}
+	}
+
+	// Grand Roque
+	if ((*plateau.JoueurTrait).peutGrandRoque == 1 && x == 7) {
+		if (PLATEAU[x*N +6] == 0 && PLATEAU[x*N + 5] == 0 && PLATEAU[x*N + 4] == 0) {
+				tabPossibiliter[2*nb] = x;
+				tabPossibiliter[2*nb+1] = 4;
+		}
+	}
+
 	tabPossibiliter[2*nb] = -1;
 	tabPossibiliter[2*nb+1] = -1;
 
@@ -370,6 +386,27 @@ int PossibiliterROI(int * tabPossibiliter, int x, int y) {
 			}
 		}
 	}
+
+	// Petit Roque
+	// Il faut que le joueur puisse le faire et qu'il n'y ai pas de piece entre la tour et le roi
+	if ((*plateau.JoueurTrait).peutPetitRoque == 1) {
+		if (PLATEAU[x*N + 1] == 0 && PLATEAU[x*N + 2] == 0) {
+			tabPossibiliter[2*nb] = x;
+			tabPossibiliter[2*nb+1] = 2;
+		}
+	}
+
+	// Grand Roque
+	// Il faut que le joueur puisse le faire et qu'il n'y ai pas de piece entre la tour et le roi
+	if ((*plateau.JoueurTrait).peutGrandRoque == 1) {
+		if (PLATEAU[x*N +6] == 0 && PLATEAU[x*N + 5] == 0 && PLATEAU[x*N + 4] == 0) {
+				tabPossibiliter[2*nb] = x;
+				tabPossibiliter[2*nb+1] = 5;
+		}
+	}
+
+	tabPossibiliter[2*nb] = -1;
+	tabPossibiliter[2*nb+1] = -1;
 
 	return priseRoi;
 }
