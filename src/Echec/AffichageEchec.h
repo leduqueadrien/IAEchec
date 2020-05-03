@@ -4,8 +4,8 @@
 
 #include "echec.h"
 
-#define couleur(couleur, fond, text) printf("\033[%s;%sm%s\033[0m", fond, param, text)
-#define clrScreen() printf("\033[H\033[2J")
+#define AfficherCouleur(couleur, fond, text) printf("\033[%d;%dm  %c \033[0m", couleur, fond, text)
+#define ClrScreen() printf("\033[H\033[2J")
 
 enum CouleurText {
 	Black_T	= 30,
@@ -31,6 +31,19 @@ enum CouleurFond {
 
 char AfficherPiece(int, int);
 void AfficherPlateau();
+
+/* -------------------------------------------------------------------------- */
+/* AfficherPlateau : Affiche le plateau de jeu dans la console                */
+/* Entree : void                                                              */
+/* Sortie : void                                                              */
+/* -------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------- */
+/* AfficherPlateau : Affiche la piece dans la console                         */
+/* Entree : int x : ligne de la piece                                         */
+/*          int y : colenne de la piece                                       */
+/* Sortie : char piece : Lettre coresspondant a la piece (P,T,C,F,R,D)        */
+/* -------------------------------------------------------------------------- */
 
 
 #endif
