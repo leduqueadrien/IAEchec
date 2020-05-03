@@ -114,21 +114,6 @@ void InitialiserDebutPartie();
 /* -------------------------------------------------------------------------- */
 void RemiseAZero();
 
-/* -------------------------------------------------------------------------- */
-/* AfficherPlateau : Affiche le plateau de jeu dans la console                */
-/* Entree : void                                                              */
-/* Sortie : void                                                              */
-/* -------------------------------------------------------------------------- */
-void AfficherPlateau();
-
-/* -------------------------------------------------------------------------- */
-/* AfficherPlateau : Affiche la piece dans la console                         */
-/* Entree : int x : ligne de la piece                                         */
-/*          int y : colenne de la piece                                       */
-/* Sortie : char piece : Lettre coresspondant a la piece (P,T,C,F,R,D)        */
-/* -------------------------------------------------------------------------- */
-char AfficherPiece(int, int);
-
 /* ----------------------------------------------------------------------------- */
 /* PossibiliterPION : Renvoit toutes les coordonnes ou le pions peut se deplacer */
 /* Entree : int x : ligne de la piece                                            */
@@ -182,20 +167,6 @@ int PossibiliterROI(int *, int, int);
 /* ----------------------------------------------------------------------------- */
 int PossibiliterDAME(int *, int, int);
 
-void DeduirPOIN(int *, int *, int, int, int);
-
-void DeduirTOUR(int *, int *, int, int, int);
-
-void DeduirCAVALIER(int *, int *, int, int);
-
-void DeduirFOU(int *, int *, int, int, int);
-
-void DeduirDAME(int *, int *, int, int);
-
-void DeduirROI(int *, int *, int, int);
-
-void DeduirCoup(int *, int *, int, int, int, int);
-
 /* ------------------------------------------------------------------------------- */
 /* JouerCoup : Joue le coup dont l'emplacement de depart et d'arriver sont donnees */
 /* Entree : int xAvant : ligne de la piece qui doit etre joue                      */
@@ -228,27 +199,8 @@ void JouerGrandRoque(int);
 /* ----------------------------------------------------------------------------- */
 void MAJRoque(int, int);
 
-int ConvertirColonneInt(char carac);
+int DeplacerPiece(int, int, int, int);
 
-int ConvertirCharPiece(char carac);
-
-int ConvertLigneInt(char carac);
-
-/* ----------------------------------------------------------------------------- */
-/* LireCoup : Interprete le coup au format PGN                                   */
-/* Entree : char * coup : chaine de caractere contenant le coup a interpreter    */
-/*          int aOrdiDeJouer : booleen qui vaut 1 si c'est a l'ordi de jouer     */
-/* Sortie : void                                                                 */
-/* ----------------------------------------------------------------------------- */
-void LireCoup(char *);
-
-/* ----------------------------------------------------------------------- */
-/* Lecture de fichier PGN dans lequel les entetes ont ete enlever          */
-/* Entree : char * nomFichier : nom du fichier ou sont stocker les parties */
-/* Sortie : void                                                           */
-/* ----------------------------------------------------------------------- */
-void LectureFichierPGN(char *);
-
-
+void PromotionPION(int, int, int);
 
 #endif
