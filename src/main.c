@@ -1,5 +1,6 @@
 
-#include"Echec/echec.h"
+#include "Echec/echec.h"
+#include "Echec/PGNEchec.h"
 
 
 int main() {
